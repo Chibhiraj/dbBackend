@@ -40,7 +40,16 @@ app.post('/', async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
-
+app.get('/', async (req, res) => {
+  try {
+    const users = await user.find({});
+    console.log(users);
+    res.json(users);
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 app.listen(port , () => console.log(`Example app listening on port ${port}!`));
 
 
