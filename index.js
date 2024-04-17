@@ -29,7 +29,6 @@ var userSchema=mongoose.Schema({
 const user=mongoose.model("user",userSchema);
 
 app.post('/', async (req, res) => {
-  console.log("enter");
   try {
     const { ml, ps } = req.body;
     const newUser = new user({ ml, ps });
@@ -40,6 +39,8 @@ app.post('/', async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
+
 app.get('/', async (req, res) => {
   try {
     const users = await user.find({});
@@ -50,17 +51,37 @@ app.get('/', async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
+app.put('/:userId', async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const { ml, ps } = req.body;
+    const updatedUser = await user.findByIdAndUpdate(userId, { ml, ps }, { new: true });
+    if (!updatedUser) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    console.error("Error updating user:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+
+app.delete('/:userId', async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const deletedUser = await user.findByIdAndDelete(userId);
+    if (!deletedUser) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    res.status(200).json({ message: "User deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+
 app.listen(port , () => console.log(`Example app listening on port ${port}!`));
-
-
-
-
-
-
-
-
-
-
-
-
 
